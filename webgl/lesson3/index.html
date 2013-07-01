@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="../support/requirejs.js"></script>
+	<script type="text/javascript">
+		window.addEventListener("load", function() {
+			require.config({
+				paths: {
+					"support": "../support"
+				},
+				urlArgs: 'cacheBust=' + Date.now()
+			});
+
+			require(["lesson"], function (Lesson) {
+				Lesson();
+			});
+		});
+	</script>
+	<script id="shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+
+		varying vec4 vColor;
+
+		void main(void) {
+			gl_FragColor = vColor;
+		}
+	</script>
+	<script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+
+		varying vec4 vColor;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vColor = aVertexColor;
+		}
+	</script>
+</head>
+<body>
+	<canvas id="canvas" style="border: 1px solid red;" width="500" height="500">
+</body>
+</html>

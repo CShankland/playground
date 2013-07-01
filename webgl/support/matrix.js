@@ -81,12 +81,32 @@ define(function(require, exports, module) {
 		var r22 = cosTheta + az * az * oneMinusCosTheta;
 
 		// Now do the multiplication
-		var m00 = mat[ 0], m01 = mat[ 1], m02 = mat[ 2], m03 = mat[ 3],
-			m10 = mat[ 4], m11 = mat[ 5], m12 = mat[ 6], m13 = mat[ 7],
-			m20 = mat[ 8], m21 = mat[ 9], m22 = mat[10], m23 = mat[11],
-			m30 = mat[12], m31 = mat[13], m32 = mat[14], m33 = mat[15];
+		var m00 = mat[ 0], m01 = mat[ 4], m02 = mat[ 8], m03 = mat[12],
+			m10 = mat[ 1], m11 = mat[ 5], m12 = mat[ 9], m13 = mat[13],
+			m20 = mat[ 2], m21 = mat[ 6], m22 = mat[10], m23 = mat[14],
+			m30 = mat[ 3], m31 = mat[ 7], m32 = mat[11], m33 = mat[15];
 
-		//mat[ 0] = 
+		mat[ 0] = m00 * r00 + m01 * r10 + m02 * r20;
+		mat[ 4] = m00 * r01 + m01 * r11 + m02 * r21;
+		mat[ 8] = m00 * r02 + m01 * r12 + m02 * r22;
+		mat[12] = m03;
+
+		mat[ 1] = m10 * r00 + m11 * r10 + m12 * r20;
+		mat[ 5] = m10 * r01 + m11 * r11 + m12 * r21;
+		mat[ 9] = m10 * r02 + m11 * r12 + m12 * r22;
+		mat[13] = m13;
+
+		mat[ 2] = m20 * r00 + m21 * r10 + m22 * r20;
+		mat[ 6] = m20 * r01 + m21 * r11 + m22 * r21;
+		mat[10] = m20 * r02 + m21 * r12 + m22 * r22;
+		mat[14] = m23;
+
+		mat[ 3] = m30 * r00 + m31 * r10 + m32 * r20;
+		mat[ 7] = m30 * r01 + m31 * r11 + m32 * r21;
+		mat[11] = m30 * r02 + m31 * r12 + m32 * r22;
+		mat[15] = m33;
+
+		return mat;
 	};
 
 	mat4.translate = function translate(mat, dx, dy, dz) {
