@@ -9,6 +9,10 @@ define(function(require, exports, module) {
 	var mat4 = {};
 	mat4.create = function createMat4() {
 		var mat = new ARRAY_TYPE(16);
+		mat.toString = function() {
+			return mat4.toString(this);
+		};
+
 		mat[ 0] = 1; mat[ 1] = 0; mat[ 2] = 0; mat[ 3] = 0;
 		mat[ 4] = 0; mat[ 5] = 1; mat[ 6] = 0; mat[ 7] = 0;
 		mat[ 8] = 0; mat[ 9] = 0; mat[10] = 1; mat[11] = 0;
@@ -35,10 +39,10 @@ define(function(require, exports, module) {
 	};
 
 	mat4.identity = function identityMat4(mat) {
-		mat[ 0] = 1; mat[ 1] = 0; mat[ 2] = 0; mat[ 3] = 0;
-		mat[ 4] = 0; mat[ 5] = 1; mat[ 6] = 0; mat[ 7] = 0;
-		mat[ 8] = 0; mat[ 9] = 0; mat[10] = 1; mat[11] = 0;
-		mat[12] = 0; mat[13] = 0; mat[14] = 0; mat[15] = 1;
+		mat[ 0] = 1; mat[ 4] = 0; mat[ 8] = 0; mat[12] = 0;
+		mat[ 1] = 0; mat[ 5] = 1; mat[ 9] = 0; mat[13] = 0;
+		mat[ 2] = 0; mat[ 6] = 0; mat[10] = 1; mat[14] = 0;
+		mat[ 3] = 0; mat[ 7] = 0; mat[11] = 0; mat[15] = 1;
 		return mat;
 	};
 
@@ -82,8 +86,37 @@ define(function(require, exports, module) {
 			m20 = mat[ 8], m21 = mat[ 9], m22 = mat[10], m23 = mat[11],
 			m30 = mat[12], m31 = mat[13], m32 = mat[14], m33 = mat[15];
 
-		mat[ 0] = 
+		//mat[ 0] = 
 	};
 
-	module.exports = api;
+	mat4.translate = function translate(mat, dx, dy, dz) {
+		mat[12] += dx;
+		mat[13] += dy;
+		mat[14] += dz;
+		return mat;
+	};
+
+	mat4.perspective = function perspective(mat, fovy, aspect, near, far) {
+		var f = 1.0 / Math.tan(0.5 * fovy);
+		var nf = 1.0 / (near - far);
+
+		mat[ 0] = f / aspect; mat[ 4] = 0; mat[ 8] = 0;                 mat[12] =  0;
+		mat[ 1] = 0;          mat[ 5] = f; mat[ 9] = 0;                 mat[13] =  0;
+		mat[ 2] = 0;          mat[ 6] = 0; mat[10] = (far + near) * nf; mat[14] = 2 * far * near * nf;
+		mat[ 3] = 0;          mat[ 7] = 0; mat[11] = -1;                mat[15] =  0;
+
+		return mat;
+	};
+
+	mat4.toString = function toString(mat) {
+		var str = "";
+		str += [mat[ 0], mat[ 4], mat[ 8], mat[ 12]].join(", ") + "\n";
+		str += [mat[ 1], mat[ 5], mat[ 9], mat[ 13]].join(", ") + "\n";
+		str += [mat[ 2], mat[ 6], mat[10], mat[ 14]].join(", ") + "\n";
+		str += [mat[ 3], mat[ 7], mat[11], mat[ 15]].join(", ");
+
+		return str;
+	};
+
+	module.exports = mat4;
 });
