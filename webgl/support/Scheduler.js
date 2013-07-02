@@ -9,6 +9,31 @@ define(function(require, exports, module) {
 	var __arrComputeTasks = [];
 	var __animationFrameScheduled = false;
 
+	// Timing / Stats data
+	var frameCount = 0;
+	var avgFrameTime = 0;
+	var avgFPS = 0;
+	var startTime = 0;
+
+	window.getSchedulerStats = function() {
+		return {
+			frameCount: frameCount,
+			avgFrameTime: avgFrameTime,
+			avgFPS: avgFPS,
+			startTime: startTime
+		};
+	};
+
+	var TIMER_FN = {
+		now: function() {
+			var timerFn = window.performance || Date;
+			var time = timerFn.now();
+			startTime = time;
+			TIMER_FN = timerFn;
+			return time;
+		}
+	};
+
 	function __scheduleAnimationFrame() {
 		if (__animationFrameScheduled) {
 			return;
@@ -26,12 +51,20 @@ define(function(require, exports, module) {
 	var tickEnd = 0;
 
 	function __animationFrame() {
-		tickStart = Date.now();
+		tickStart = TIMER_FN.now();
 		for (var idx = 0, len = __arrAnimationTasks.length; idx < len; ++idx) {
 			__arrAnimationTasks[idx]();
 		}
 
-		tickEnd = Date.now();
+		tickEnd = TIMER_FN.now();
+
+		// Timing hook
+		var frameTime = tickEnd - tickStart;
+		var totalFrameTime = avgFrameTime * frameCount;
+		++frameCount;
+
+		avgFrameTime = (totalFrameTime + frameTime) / frameCount;
+		avgFPS = frameCount / (tickStart - startTime) * 1000;
 
 		__animationFrameScheduled = false;
 		__scheduleAnimationFrame();
