@@ -9,20 +9,20 @@ define(function(require, exports, module) {
 		-1.0, -1.0,  1.0,
 		 1.0, -1.0,  1.0,
 
-		 // "Left" side face
+		 // "Right" side face
 		 0.0,  1.0,  0.0,
-		-1.0, -1.0,  1.0,
-		 0.0, -1.0, -1.0,
+		 1.0, -1.0,  1.0,
+		 1.0, -1.0, -1.0,
 
-		// "Right" side face
+		// "Back" side face
 		 0.0,  1.0,  0.0,
-		 0.0, -1.0, -1.0,
-		 1.0, -1.0,  1.0,
+		 1.0, -1.0, -1.0,
+		-1.0, -1.0, -1.0,
 
-		// "Bottom" face
-		 1.0, -1.0,  1.0,
-		-1.0, -1.0,  1.0,
-		 0.0, -1.0, -1.0
+		// "Left" face
+		 0.0,  1.0,  0.0,
+		-1.0, -1.0, -1.0,
+		-1.0, -1.0,  1.0
 	];
 
 	var pyramidVertexColorBuffer;
@@ -98,6 +98,16 @@ define(function(require, exports, module) {
 			cubeColors = cubeColors.concat(faceColors[color]);
 		}
 	}
+
+	var cubeVertexIndexBuffer;
+	var cubeIndices = [
+		 0,  1,  2,	 0,  2,  3,
+		 4,  5,  6,  4,  6,  7,
+		 8,  9, 10,  8, 10, 11,
+		12, 13, 14, 12, 14, 15,
+		16, 17, 18, 16, 18, 19,
+		20, 21, 22, 20, 22, 23
+	];
 
 	var gl;
 	var mvMatrix = mat4.create();
@@ -197,7 +207,6 @@ define(function(require, exports, module) {
 
 	function initBuffers() {
 		pyramidVertexPositionBuffer = gl.createBuffer();
-
 		gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidVertices), gl.STATIC_DRAW);
 		pyramidVertexPositionBuffer.itemSize = 3;
@@ -210,7 +219,6 @@ define(function(require, exports, module) {
 		pyramidVertexColorBuffer.numItems = 12;
 
 		cubeVertexPositionBuffer = gl.createBuffer();
-
 		gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertices), gl.STATIC_DRAW);
 		cubeVertexPositionBuffer.itemSize = 3;
@@ -221,6 +229,12 @@ define(function(require, exports, module) {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeColors), gl.STATIC_DRAW);
 		cubeVertexColorBuffer.itemSize = 4;
 		cubeVertexColorBuffer.numItems = 24;
+
+		cubeVertexIndexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
+		cubeVertexIndexBuffer.itemSize = 1;
+		cubeVertexIndexBuffer.numItems = 36;
 	}
 
 	function drawScene() {
@@ -256,8 +270,11 @@ define(function(require, exports, module) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
 		gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+		
 		setMatrixUniforms();
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeVertexPositionBuffer.numItems);
+		gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
 		mvPopMatrix();
 	}
 
